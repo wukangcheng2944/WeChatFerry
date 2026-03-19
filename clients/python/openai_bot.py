@@ -34,6 +34,13 @@ DEFAULT_TIMEOUT = 60.0
 DEFAULT_HISTORY_SIZE = 12
 
 
+def normalize_base_url(value: str) -> str:
+    base_url = value.strip().rstrip("/")
+    if base_url.endswith("/chat/completions"):
+        base_url = base_url[: -len("/chat/completions")]
+    return base_url
+
+
 @dataclass
 class AppConfig:
     database_url: str
@@ -50,7 +57,7 @@ class AppConfig:
 
         database_url = os.getenv("DATABASE_URL", "").strip()
         openai_api_key = os.getenv("OPENAI_API_KEY", "").strip()
-        openai_base_url = os.getenv("OPENAI_BASE_URL", "").strip()
+        openai_base_url = normalize_base_url(os.getenv("OPENAI_BASE_URL", ""))
         openai_model = os.getenv("OPENAI_MODEL", "gpt-5-mini").strip() or "gpt-5-mini"
         openai_system_prompt = os.getenv("OPENAI_SYSTEM_PROMPT", DEFAULT_SYSTEM_PROMPT).strip() or DEFAULT_SYSTEM_PROMPT
         openai_timeout = float(os.getenv("OPENAI_TIMEOUT", DEFAULT_TIMEOUT))

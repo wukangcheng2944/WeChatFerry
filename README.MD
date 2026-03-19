@@ -37,6 +37,11 @@ Copy `.env.example` to `.env` in the repository root and fill in:
 - `OPENAI_BASE_URL`
 - `OPENAI_MODEL`
 
+For the existing ephone-compatible setup used in other local projects, the working values are:
+
+- `OPENAI_BASE_URL=https://api.ephone.chat/v1`
+- `OPENAI_MODEL=gemini-3.1-pro-preview`
+
 ### 3. Start the bot
 
 ```bat

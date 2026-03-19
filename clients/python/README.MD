@@ -32,6 +32,11 @@ Copy `.env.example` to `.env` in the repository root and configure:
 - `OPENAI_TIMEOUT`
 - `OPENAI_MAX_HISTORY`
 
+For the same ephone-compatible endpoint already used in other local projects, set:
+
+- `OPENAI_BASE_URL=https://api.ephone.chat/v1`
+- `OPENAI_MODEL=gemini-3.1-pro-preview`
+
 ## Install
 
 The recommended path is the root start script:
