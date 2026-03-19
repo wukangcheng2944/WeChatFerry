@@ -14,6 +14,36 @@ ENV_FILE = REPO_ROOT / ".env"
 SESSION_KEY = "private:db-smoke"
 
 
+def build_smoke_metadata(role: str) -> Jsonb:
+    payload = {
+        "schema_version": 1,
+        "source": "db_smoke",
+        "transport": "manual",
+        "message": {
+            "role": role,
+        },
+        "session": {
+            "key": SESSION_KEY,
+            "type": "private",
+            "chat_key": "db-smoke",
+            "title": "DB Smoke Session",
+        },
+        "wechat": {
+            "receiver": "db-smoke",
+            "user_wxid": "db-smoke",
+            "room_wxid": None,
+        },
+        "llm": {
+            "provider": "smoke",
+            "model": "manual",
+        },
+        "extra": {
+            "direction": "manual",
+        },
+    }
+    return Jsonb(payload)
+
+
 def require_database_url() -> str:
     load_dotenv(ENV_FILE)
     database_url = os.getenv("DATABASE_URL", "").strip()
@@ -70,7 +100,7 @@ def main() -> None:
                         4,
                         None,
                         4,
-                        Jsonb({"source": "db_smoke"}),
+                        build_smoke_metadata("user"),
                     ),
                     (
                         session_id,
@@ -81,7 +111,7 @@ def main() -> None:
                         None,
                         3,
                         7,
-                        Jsonb({"source": "db_smoke"}),
+                        build_smoke_metadata("assistant"),
                     ),
                 ],
             )

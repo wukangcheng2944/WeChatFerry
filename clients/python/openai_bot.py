@@ -121,6 +121,48 @@ class CompletionResult:
     metadata: Dict[str, Any]
 
 
+def build_message_metadata(
+    route: SessionRoute,
+    role: str,
+    provider: str,
+    model: str,
+    *,
+    finish_reason: Optional[str] = None,
+    usage: Optional[Dict[str, Any]] = None,
+    extra: Optional[Dict[str, Any]] = None,
+) -> Jsonb:
+    payload: Dict[str, Any] = {
+        "schema_version": 1,
+        "source": "wechat",
+        "transport": "wcf",
+        "message": {
+            "role": role,
+        },
+        "session": {
+            "key": route.session_key,
+            "type": route.session_type,
+            "chat_key": route.chat_key,
+            "title": route.title,
+        },
+        "wechat": {
+            "receiver": route.receiver,
+            "user_wxid": route.user_wxid,
+            "room_wxid": route.room_wxid,
+        },
+        "llm": {
+            "provider": provider,
+            "model": model,
+        },
+    }
+    if finish_reason:
+        payload["llm"]["finish_reason"] = finish_reason
+    if usage:
+        payload["llm"]["usage"] = usage
+    if extra:
+        payload["extra"] = extra
+    return Jsonb(payload)
+
+
 class PgConversationStore:
     def __init__(self, dsn: str) -> None:
         self._dsn = dsn
@@ -234,25 +276,25 @@ class PgConversationStore:
         return [{"role": role, "content": content} for role, content in rows]
 
     def append_turn(self, session_id: int, route: SessionRoute, result: CompletionResult) -> None:
-        user_metadata = Jsonb(
-            {
-                "source": "wechat",
-                "session_key": route.session_key,
-                "chat_key": route.chat_key,
-                "user_wxid": route.user_wxid,
-                "room_wxid": route.room_wxid,
-            }
+        user_usage: Dict[str, Any] = {}
+        if result.prompt_tokens is not None:
+            user_usage["prompt_tokens"] = result.prompt_tokens
+        user_metadata = build_message_metadata(
+            route,
+            "user",
+            result.provider,
+            result.model,
+            usage=user_usage or None,
+            extra={"direction": "inbound"},
         )
-        assistant_metadata = Jsonb(
-            {
-                "source": "wechat",
-                "session_key": route.session_key,
-                "chat_key": route.chat_key,
-                "user_wxid": route.user_wxid,
-                "room_wxid": route.room_wxid,
-                "finish_reason": result.finish_reason,
-                "usage": result.metadata,
-            }
+        assistant_metadata = build_message_metadata(
+            route,
+            "assistant",
+            result.provider,
+            result.model,
+            finish_reason=result.finish_reason,
+            usage=result.metadata or None,
+            extra={"direction": "outbound"},
         )
 
         insert_sql = """

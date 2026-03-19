@@ -42,7 +42,13 @@ For the same ephone-compatible endpoint already used in other local projects, se
 The recommended path is the root start script:
 
 ```bat
-start_bot.bat
+start_bot.bat wechat
+```
+
+For database-only verification without WeChat:
+
+```bat
+start_bot.bat db
 ```
 
 If you want to run manually:
@@ -82,8 +88,4 @@ The OpenAI bot then:
 - `openai_bot.py`: OpenAI-compatible PostgreSQL-backed bot
 - `wcferry/client.py`: main WeChat client implementation
 
-For database-only verification without WeChat, run from the repository root:
-
-```bat
-python db_smoke.py
-```
+`chat_messages.metadata` is now a structured JSON document with `session`, `wechat`, `llm`, `message`, and `extra` sections.

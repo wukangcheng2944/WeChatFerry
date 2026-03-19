@@ -60,11 +60,24 @@ For the existing ephone-compatible setup used in other local projects, the worki
 
 ### 4. Start the bot
 
+For database-only verification:
+
 ```bat
-start_bot.bat
+start_bot.bat db
 ```
 
-The start script creates a virtual environment, installs dependencies from `requirements.txt`, validates that `.env` exists, checks `SDK.dll` and `spy.dll`, and then starts the Python bot.
+For the WeChat bot path:
+
+```bat
+start_bot.bat wechat
+```
+
+The start script supports two modes:
+
+- `db`: installs dependencies and runs `db_smoke.py`
+- `wechat`: installs dependencies, checks `SDK.dll` and `spy.dll`, and runs the Python bot
+
+If `venv` creation fails on the local Python runtime, the script automatically falls back to a local `.deps` directory for dependencies.
 
 ## Bot Behavior
 
@@ -92,6 +105,17 @@ The intended session keying is:
 This round prepares storage and environment only. The WeChat client integration path is intentionally left unchanged for now.
 
 The OpenAI-compatible bot code now reads and writes against these two tables instead of the earlier single-table prototype.
+
+Each row in `chat_messages.metadata` now uses a structured JSON shape with:
+
+- `schema_version`
+- `source`
+- `transport`
+- `message`
+- `session`
+- `wechat`
+- `llm`
+- optional `extra`
 
 ## Python Entry Points
 
