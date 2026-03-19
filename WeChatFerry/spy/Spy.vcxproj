@@ -25,21 +25,21 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dev|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -92,7 +92,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)com;$(SolutionDir)rpc;$(SolutionDir)rpc\nanopb;$(SolutionDir)rpc\proto;$(SolutionDir)smc;$(SolutionDir)spy;$(SolutionDir)vcpkg_installed\x64-windows-static\x64-windows-static\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)com;$(SolutionDir)rpc;$(SolutionDir)rpc\nanopb;$(SolutionDir)rpc\proto;$(SolutionDir)smc;$(SolutionDir)spy;$(SolutionDir)vcpkg_installed\$(VcpkgTriplet)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <OmitFramePointers>false</OmitFramePointers>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -108,15 +108,15 @@
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <AdditionalOptions> /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>$(SolutionDir)smc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>iphlpapi.lib;wsock32.lib;ws2_32.lib;crypt32.lib;Codec.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)smc;$(SolutionDir)vcpkg_installed\$(VcpkgTriplet)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>iphlpapi.lib;wsock32.lib;ws2_32.lib;crypt32.lib;Codec.lib;fmt.lib;spdlog.lib;nng.lib;minhook.x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
       <Command>call "$(SolutionDir)license_check.bat"
 if errorlevel 1 exit 1
 cd $(SolutionDir)rpc\proto
-$(SolutionDir)rpc\tool\protoc --nanopb_out=. wcf.proto</Command>
+call "$(SolutionDir)rpc\tool\protoc.bat" --nanopb_out=. wcf.proto</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>Generating PB files</Message>
@@ -145,7 +145,7 @@ xcopy /y $(SolutionDir)DISCLAIMER.md $(SolutionDir)..\clients\python\wcferry</Co
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)com;$(SolutionDir)rpc;$(SolutionDir)rpc\nanopb;$(SolutionDir)rpc\proto;$(SolutionDir)smc;$(SolutionDir)spy;$(SolutionDir)vcpkg_installed\x64-windows-static\x64-windows-static\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)com;$(SolutionDir)rpc;$(SolutionDir)rpc\nanopb;$(SolutionDir)rpc\proto;$(SolutionDir)smc;$(SolutionDir)spy;$(SolutionDir)vcpkg_installed\$(VcpkgTriplet)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <OmitFramePointers>false</OmitFramePointers>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -162,15 +162,15 @@ xcopy /y $(SolutionDir)DISCLAIMER.md $(SolutionDir)..\clients\python\wcferry</Co
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <AdditionalOptions> /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>$(SolutionDir)smc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>iphlpapi.lib;wsock32.lib;ws2_32.lib;crypt32.lib;Codec.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)smc;$(SolutionDir)vcpkg_installed\$(VcpkgTriplet)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>iphlpapi.lib;wsock32.lib;ws2_32.lib;crypt32.lib;Codec.lib;fmt.lib;spdlog.lib;nng.lib;minhook.x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
       <Command>call "$(SolutionDir)license_check.bat"
 if errorlevel 1 exit 1
 cd $(SolutionDir)rpc\proto
-$(SolutionDir)rpc\tool\protoc --nanopb_out=. wcf.proto</Command>
+call "$(SolutionDir)rpc\tool\protoc.bat" --nanopb_out=. wcf.proto</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>Generating PB files</Message>
@@ -201,7 +201,7 @@ xcopy /y $(SolutionDir)DISCLAIMER.md $(SolutionDir)..\clients\python\wcferry</Co
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)com;$(SolutionDir)rpc;$(SolutionDir)rpc\nanopb;$(SolutionDir)rpc\proto;$(SolutionDir)smc;$(SolutionDir)spy;$(SolutionDir)vcpkg_installed\x64-windows-static\x64-windows-static\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)com;$(SolutionDir)rpc;$(SolutionDir)rpc\nanopb;$(SolutionDir)rpc\proto;$(SolutionDir)smc;$(SolutionDir)spy;$(SolutionDir)vcpkg_installed\$(VcpkgTriplet)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OmitFramePointers>false</OmitFramePointers>
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4251;4731;4819</DisableSpecificWarnings>
@@ -216,8 +216,8 @@ xcopy /y $(SolutionDir)DISCLAIMER.md $(SolutionDir)..\clients\python\wcferry</Co
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)smc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>iphlpapi.lib;wsock32.lib;ws2_32.lib;crypt32.lib;Codec.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)smc;$(SolutionDir)vcpkg_installed\$(VcpkgTriplet)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>iphlpapi.lib;wsock32.lib;ws2_32.lib;crypt32.lib;Codec.lib;fmt.lib;spdlog.lib;nng.lib;minhook.x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions> /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
@@ -225,7 +225,7 @@ xcopy /y $(SolutionDir)DISCLAIMER.md $(SolutionDir)..\clients\python\wcferry</Co
       <Command>call "$(SolutionDir)license_check.bat"
 if errorlevel 1 exit 1
 cd $(SolutionDir)rpc\proto
-$(SolutionDir)rpc\tool\protoc --nanopb_out=. wcf.proto</Command>
+call "$(SolutionDir)rpc\tool\protoc.bat" --nanopb_out=. wcf.proto</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Message>Copy spy.dll</Message>

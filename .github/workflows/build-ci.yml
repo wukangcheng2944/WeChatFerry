@@ -11,10 +11,10 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 设置 Visual Studio 2019
+      - name: 设置 Visual Studio 2022
         uses: microsoft/setup-msbuild@v2
         with:
-          vs-version: "16.0"
+          vs-version: "17.0"
 
       - name: 设置 Python 3
         uses: actions/setup-python@v5
@@ -68,12 +68,7 @@ jobs:
           $configs = "Release","Debug"
           foreach ($cfg in $configs) {
             Write-Host "Building $cfg"
-            msbuild WeChatFerry/WeChatFerry.sln `
-              /p:Configuration=$cfg `
-              /p:Platform="x64" `
-              /p:VcpkgTriplet="x64-windows-static" `
-              /p:VcpkgEnableManifest=true `
-              /verbosity:minimal
+            & "${{ github.workspace }}/WeChatFerry/build_vs2022.cmd" $cfg
           }
         shell: pwsh
 
