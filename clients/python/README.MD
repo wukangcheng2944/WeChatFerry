@@ -1,89 +1,70 @@
-# WeChatFerry Python 客户端
-[![PyPi](https://img.shields.io/pypi/v/wcferry.svg)](https://pypi.python.org/pypi/wcferry) [![Downloads](https://static.pepy.tech/badge/wcferry)](https://pypi.python.org/pypi/wcferry) [![Documentation Status](https://readthedocs.org/projects/wechatferry/badge/?version=latest)](https://wechatferry.readthedocs.io/zh/latest/?badge=latest)
+# WeChatFerry Python Client
 
-|[📖 Python 文档](https://wechatferry.readthedocs.io/)|[📺 Python 视频教程](https://mp.weixin.qq.com/s/APdjGyZ2hllXxyG_sNCfXQ)|[🙋 FAQ](https://mp.weixin.qq.com/s/c2JggTBlOP8fP9j-MlMAvg)|
-|:-:|:-:|:-:|
+This folder contains the local Python client for the Windows WeChat bot workflow.
 
-🤖示例机器人框架：[WeChatRobot](https://github.com/lich0821/WeChatRobot)。
+## Requirements
 
-|![碲矿](https://raw.githubusercontent.com/lich0821/WeChatFerry/master/assets/TEQuant.jpg)|![赞赏](https://raw.githubusercontent.com/lich0821/WeChatFerry/master/assets/QR.jpeg)|
-|:-:|:-:|
-|后台回复 `WCF` 加群交流|如果你觉得有用|
+- Windows
+- Compatible Windows WeChat: `3.9.12.51`
+- Python `>=3.8`
+- Built native files copied into `clients/python/wcferry`
 
-## 快速开始
-```sh
-pip install --upgrade wcferry
+Build the native layer first from the repository root:
+
+```bat
+cd WeChatFerry
+build_vs2022.cmd Release
 ```
 
-### Demo：
-参考 [WeChatRobot](https://github.com/lich0821/WeChatRobot) 和上面的文档。
+## Install
 
-## 一起开发
-### 配置环境
-```sh
-# 创建虚拟环境
-python -m venv .env
-# 激活虚拟环境
-source .env/Scripts/activate
-# 升级 pip
-pip install --upgrade pip
-# 安装依赖包
-pip install grpcio-tools pynng
+```bat
+cd clients\python
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -U pip
+pip install -e .
 ```
 
-### 重新生成 PB 文件
-```sh
-# CMD
-cd clients\python\wcferry
-python -m grpc_tools.protoc --python_out=. --proto_path=..\..\..\WeChatFerry\rpc\proto\ wcf.proto
+## Run
 
-# GitBash
-cd clients/python/wcferry
-python -m grpc_tools.protoc --python_out=. --proto_path=../../../WeChatFerry/rpc/proto/ wcf.proto
+Minimal test:
+
+```bat
+python test.py
 ```
 
-## 版本更新
+Simple bot example:
 
-### v39.5.2.0
-* 没有新功能
+```bat
+python bot_demo.py
+```
 
-<details><summary>点击查看更多</summary>
+## Local Mode
 
-版本号：`w.x.y.z`。
+`Wcf()` without a `host` argument runs in local mode. In that mode the client:
 
-其中：
-* `w` 是微信的大版本号，如 `37` (3.7.a.a), `38` (3.8.a.a), `39` (3.9.a.a)
-* `x` 是适配的微信的小版本号，从 0 开始
-* `y` 是 `WeChatFerry` 的版本，从 0 开始
-* `z` 是各客户端的版本，从 0 开始
+- loads `sdk.dll`
+- opens WeChat if needed
+- injects `spy.dll`
+- starts a local RPC service on port `10086`
+- waits for login by default
 
-功能：
+## Common Pattern
 
-* 获取登录二维码
-* 查询登录状态
-* 获取登录账号信息
-* 获取消息类型
-* 获取联系人
-* 获取可查询数据库
-* 获取数据库所有表
-* 获取语音消息
-* 发送文本消息（可 @）
-* 发送图片消息
-* 发送文件消息
-* 发送卡片消息
-* 发送 XML 消息
-* 发送 GIF 消息
-* 拍一拍群友
-* 转发消息
-* 开启接收消息
-* 关闭接收消息
-* 查询数据库
-* 获取朋友圈消息
-* 下载图片、视频、文件
-* 解密图片
-* 通过好友申请
-* 添加群成员
-* 删除群成员
-* 邀请群成员
+```python
+from wcferry import Wcf
 
-</details>
+wcf = Wcf(debug=True)
+wcf.enable_receiving_msg()
+
+while True:
+    msg = wcf.get_msg()
+    print(msg)
+```
+
+## Files
+
+- `test.py`: upstream demo
+- `bot_demo.py`: simple command-style bot example
+- `wcferry/client.py`: main client implementation
