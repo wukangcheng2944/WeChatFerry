@@ -36,6 +36,14 @@ docker compose up -d postgres
 
 This repository now includes a dedicated local PostgreSQL service on host port `5437`. The initial schema is created from `db/init/001_init.sql` and contains `chat_sessions` and `chat_messages`.
 
+Useful database commands:
+
+```bat
+db_up.bat
+db_reset.bat
+python db_smoke.py
+```
+
 ### 3. Create a local config
 
 Copy `.env.example` to `.env` in the repository root and fill in:
@@ -82,6 +90,8 @@ The intended session keying is:
 - group chat: `group:{roomid}`
 
 This round prepares storage and environment only. The WeChat client integration path is intentionally left unchanged for now.
+
+The OpenAI-compatible bot code now reads and writes against these two tables instead of the earlier single-table prototype.
 
 ## Python Entry Points
 

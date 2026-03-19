@@ -70,9 +70,10 @@ The OpenAI bot then:
 
 - processes all private text messages
 - processes group text messages only when the bot is mentioned
-- loads recent AI conversation history from PostgreSQL
+- upserts a row in `chat_sessions`
+- loads recent AI conversation history from `chat_messages`
 - calls the configured OpenAI-compatible `chat.completions` endpoint
-- writes successful turns back to PostgreSQL
+- writes successful turns back to `chat_messages`
 
 ## Files
 
@@ -80,3 +81,9 @@ The OpenAI bot then:
 - `bot_demo.py`: simple rule-based demo
 - `openai_bot.py`: OpenAI-compatible PostgreSQL-backed bot
 - `wcferry/client.py`: main WeChat client implementation
+
+For database-only verification without WeChat, run from the repository root:
+
+```bat
+python db_smoke.py
+```
