@@ -1,0 +1,7 @@
+openai
+python-dotenv
+psycopg[binary]
+grpcio-tools
+pynng
+requests
+setuptools

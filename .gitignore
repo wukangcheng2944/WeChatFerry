@@ -1,6 +1,7 @@
 .*
 !.gitignore
 !.editorconfig
+!.env.example
 !.github/
 !.readthedocs.yml
 !.gitattributes

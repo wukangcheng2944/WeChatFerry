@@ -1,17 +1,18 @@
 # WeChatFerry
 
-Independent WeChatFerry fork with a verified VS2022 build path.
+Independent WeChatFerry fork with a verified VS2022 build path and an OpenAI-compatible WeChat bot example backed by PostgreSQL.
 
-This fork is based on the last usable source snapshot before the upstream `master` branch was cleared. It keeps the original project structure, adds a working VS2022 build flow, and is suitable for local Windows WeChat bot development.
+This fork is based on the last usable source snapshot before the upstream `master` branch was cleared. It keeps the original project structure, fixes the VS2022 build flow, and adds a production-oriented Python bot entry point.
 
 ## Status
 
 - Supported Windows WeChat version: `3.9.12.51`
-- Verified toolchain: Visual Studio 2022
-- Verified outputs: `sdk.dll`, `spy.dll`
-- Verified local Python client flow: `clients/python`
+- Verified native build toolchain: Visual Studio 2022
+- Verified native outputs: `SDK.dll`, `spy.dll`
+- Local repo path: `D:\workspace\WeChatFerry`
+- Python bot entry point: `clients/python/openai_bot.py`
 
-The WeChat version check is enforced in [spy.h](./WeChatFerry/spy/spy.h) and [spy.cpp](./WeChatFerry/spy/spy.cpp).
+The runtime version check is enforced in `WeChatFerry/spy/spy.h` and `WeChatFerry/spy/spy.cpp`.
 
 ## Quick Start
 
@@ -22,70 +23,70 @@ cd WeChatFerry
 build_vs2022.cmd Release
 ```
 
-After a successful build, the key files are copied to:
+After a successful build, the native files are copied to:
 
 - `WeChatFerry\Out`
 - `clients\python\wcferry`
 
-### 2. Create a Python environment
+### 2. Create a local config
+
+Copy `.env.example` to `.env` in the repository root and fill in:
+
+- `DATABASE_URL`
+- `OPENAI_API_KEY`
+- `OPENAI_BASE_URL`
+- `OPENAI_MODEL`
+
+### 3. Start the bot
 
 ```bat
-cd ..\clients\python
-python -m venv .venv
-.\.venv\Scripts\activate
-pip install -U pip
-pip install -e .
+start_bot.bat
 ```
 
-### 3. Run the demo bot
+The start script creates a virtual environment, installs dependencies from `requirements.txt`, validates that `.env` exists, checks `SDK.dll` and `spy.dll`, and then starts the Python bot.
 
-```bat
-python bot_demo.py
-```
+## Bot Behavior
 
-### 4. Open and log in to WeChat
+- Private chat: every text message is sent to the AI service
+- Group chat: only messages that `@` the bot are sent to the AI service
+- Only AI conversations are stored in PostgreSQL
+- Conversation history is keyed by:
+  - private chat: `sender`
+  - group chat: `roomid`
+- Model protocol: OpenAI-compatible `chat.completions`
+- Default model: `gpt-5-mini`
 
-When `Wcf()` starts in local mode, it loads `sdk.dll`, starts the local RPC service, opens WeChat if needed, injects `spy.dll`, and waits for login.
+## PostgreSQL Storage
 
-If you see a version mismatch dialog, your installed Windows WeChat is not `3.9.12.51`.
+The Python bot automatically creates a minimal table named `ai_chat_messages` on startup if it does not exist.
 
-## How To Use It As A WeChat Bot
+Stored records include:
 
-The simplest path is the Python client in `clients/python`.
+- `session_id`
+- `chat_type`
+- `chat_key`
+- `role`
+- `content`
+- `wx_sender`
+- `wx_roomid`
+- `created_at`
 
-The demo bot included in this fork does the following:
+Only successful AI turns are stored: one `user` message and one `assistant` message per turn.
 
-- connects to local WeChat via `Wcf()`
-- enables message receiving
-- replies `pong` when a private chat or group message body equals `ping`
-- replies `status: ok` when the body equals `status`
+## Python Entry Points
 
-You can extend the message handler to:
-
-- route by sender `wxid`
-- route by group `roomid`
-- call external HTTP APIs
-- store state in SQLite or Redis
-- implement command-style bots
+- Minimal upstream example: `clients/python/test.py`
+- Local simple demo: `clients/python/bot_demo.py`
+- OpenAI-compatible bot: `clients/python/openai_bot.py`
+- Main client wrapper: `clients/python/wcferry/client.py`
 
 ## Usage Notes
 
 - This project targets Windows desktop WeChat, not the official public platform API.
-- The local client machine must have a compatible WeChat installed.
+- The local machine must have a compatible WeChat installed.
 - First run may show the disclaimer confirmation dialog.
-- If you build `Debug`, use `build_vs2022.cmd Debug`.
-- Direct solution build also works after the VS2022 fixes:
-
-```bat
-cd WeChatFerry
-msbuild WeChatFerry.sln /p:Configuration=Release /p:Platform=x64
-```
-
-## Python Entry Points
-
-- Minimal example: [clients/python/test.py](./clients/python/test.py)
-- Bot example added in this fork: [clients/python/bot_demo.py](./clients/python/bot_demo.py)
-- Main client wrapper: [clients/python/wcferry/client.py](./clients/python/wcferry/client.py)
+- If your installed WeChat version is not `3.9.12.51`, startup will fail with a version mismatch dialog.
+- If native files are missing, run `WeChatFerry\build_vs2022.cmd Release` first.
 
 ## Repository
 
@@ -96,4 +97,4 @@ msbuild WeChatFerry.sln /p:Configuration=Release /p:Platform=x64
 
 Read the project disclaimer before use:
 
-- [WeChatFerry/DISCLAIMER.md](./WeChatFerry/DISCLAIMER.md)
+- `WeChatFerry/DISCLAIMER.md`
