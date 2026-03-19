@@ -28,7 +28,15 @@ After a successful build, the native files are copied to:
 - `WeChatFerry\Out`
 - `clients\python\wcferry`
 
-### 2. Create a local config
+### 2. Start local PostgreSQL
+
+```bat
+docker compose up -d postgres
+```
+
+This repository now includes a dedicated local PostgreSQL service on host port `5437`. The initial schema is created from `db/init/001_init.sql` and contains `chat_sessions` and `chat_messages`.
+
+### 3. Create a local config
 
 Copy `.env.example` to `.env` in the repository root and fill in:
 
@@ -42,7 +50,7 @@ For the existing ephone-compatible setup used in other local projects, the worki
 - `OPENAI_BASE_URL=https://api.ephone.chat/v1`
 - `OPENAI_MODEL=gemini-3.1-pro-preview`
 
-### 3. Start the bot
+### 4. Start the bot
 
 ```bat
 start_bot.bat
@@ -63,20 +71,17 @@ The start script creates a virtual environment, installs dependencies from `requ
 
 ## PostgreSQL Storage
 
-The Python bot automatically creates a minimal table named `ai_chat_messages` on startup if it does not exist.
+The repository now includes a dedicated local schema bootstrap for PostgreSQL:
 
-Stored records include:
+- `chat_sessions`
+- `chat_messages`
 
-- `session_id`
-- `chat_type`
-- `chat_key`
-- `role`
-- `content`
-- `wx_sender`
-- `wx_roomid`
-- `created_at`
+The intended session keying is:
 
-Only successful AI turns are stored: one `user` message and one `assistant` message per turn.
+- private chat: `private:{sender}`
+- group chat: `group:{roomid}`
+
+This round prepares storage and environment only. The WeChat client integration path is intentionally left unchanged for now.
 
 ## Python Entry Points
 

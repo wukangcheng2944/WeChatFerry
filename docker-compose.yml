@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: wechatferry-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: wechatferry
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5437:5432"
+    volumes:
+      - wechatferry_pg_data:/var/lib/postgresql/data
+      - ./db/init/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d wechatferry"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  wechatferry_pg_data:
